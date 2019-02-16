@@ -1,0 +1,96 @@
+.my-container{
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+.container-left{
+    width: 45%;
+    margin: 2%;
+    display: inline-block;
+}
+.container-left h2{
+    text-align: center;
+    text-decoration: underline;
+}
+.message-left{
+    width: 70%;
+    display: inline-block;
+}
+.message-right{
+    width: 25%;
+    display: inline-block;
+}
+.message-left p{
+    text-align: center;
+    display: inline-block;
+}
+.message-left span{
+    color: purple;
+    font-weight: bold;
+}
+.message-right button{
+    background-image: url(../img/trashcan.png);
+    background-size: contain;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    vertical-align: bottom;
+    padding: 5px;
+    margin: 1px;
+    border: 1px solid black;
+    border-radius: 2px;
+    display: inline-block;
+}
+.message-bottom p{
+    background-color: #cccccc;
+    width: 100%;
+    text-align: left;
+    padding: 5px;
+    margin: 2px;
+}
+.container-right{
+    vertical-align: top;
+    margin: 2%;
+    width: 45%;
+    display: inline-block;
+}
+.container-right h2{
+    text-align: center;
+    text-decoration: underline;
+}
+.header{
+    display: block;
+    width: 100%;
+}
+.header h1{
+    text-align: left;
+    padding: 10px;
+    margin: 1% 1% 1% 1%;
+    vertical-align: top;
+    font-size: 3em;
+    display: inline-block;
+    width: 45%;
+}
+.header p{
+    text-align: right;
+    padding: 10px;
+    margin: 1% 1% 1% 1%;
+    vertical-align: top;
+    font-size: 2em;
+    display: inline-block;
+    width: 35%;
+}
+.header a{
+    text-align: center;
+    padding: 10px;
+    margin: 1% 1% 1% 1%;
+    vertical-align: middle;
+    font-size: 1em;
+    display: inline-block;
+    width: 10%;
+    line-height: 50px;
+}
+.my_comment{
+    height: 200px;
+    margin-bottom: 20px;
+}

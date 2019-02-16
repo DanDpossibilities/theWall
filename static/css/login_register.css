@@ -1,0 +1,15 @@
+.container{
+    display: block;
+    text-align: center;
+}
+.container-left{
+    width: 45%;
+    margin: 2%;
+    display: inline-block;
+}
+.container-right{
+    vertical-align: top;
+    margin: 2%;
+    width: 45%;
+    display: inline-block;
+}
