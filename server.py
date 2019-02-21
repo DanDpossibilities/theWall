@@ -13,7 +13,6 @@ EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 #----------------Get routes-----------------#
 @app.route('/')
 def home():
-    print(request.form)
     return render_template('home.html')
 
 @app.route('/success/<id>')
@@ -31,11 +30,9 @@ def messaging():
     }
     current_messages = received_messages(current_user)
     count = len(current_messages)
-    print('&'*87)
+    print('wall'*27)
     users = users_to_message(current_user)
-    print(users)
     return render_template('messages.html', users = users, current_messages = current_messages, count =  count, now = datetime.now())
-
 
 @app.route('/logout')
 def logout():
@@ -110,12 +107,13 @@ def login():
 @app.route('/delete', methods=['POST'])
 def delete_message():
     print(request.form)
-    print(session)
+    # print(session)
     message_to_delete = {
-        'message_id': request.form['deleted_message']
+        'message_id': int(request.form['message_id'])
     }
     deleting_message(message_to_delete)
-    return redirect ('/wall')
+    return ""
+    # return redirect ('/wall')
 
 @app.route('/send_message', methods=['POST'])
 def send_message_now():
@@ -137,7 +135,38 @@ def send_message_now():
 
     flash('You have sent ' + str(total_count) + 'messages.')
     send_my_message(message)
-    return redirect('/wall')
+    return render_template('partials/comment_sent.html')
+    # return redirect('/wall')
+
+@app.route("/email", methods=["POST"])
+def email():
+    found = False
+    field = {
+        'email': request.form['email']
+    }
+    result = ajax_verify_email(field)
+    if result:
+        found = True
+    return render_template('partials/email.html', found = found)
+
+@app.route('/usersearch', methods=['POST'])
+def search():
+    print('search'*23)
+    print(request.form)
+    print(request.args.get('f_name'))
+    print('searchDB'*19)
+    mysql = connectToMySQL("login_registration")
+    query = 'SELECT * FROM registrations WHERE first_name LIKE %%(name)s;'
+    
+    data = {
+        # 'fname': request.args.get('f_name') + '%' # get our data from the query string in the url
+        'name': request.form['f_name'] + '%'
+    }
+    results = mysql.query_db(query, data)
+    names = results
+    print(names)
+    return render_template('partials/search.html', names = names)
+    # return render_template('messages.html', options = results)
 
 #-------------------- DATABASES ----------------------#
 def db_add_user(userInfo):
@@ -209,6 +238,21 @@ def count_my_messages(my_id):
         'sender': my_id['sender']
     }
     return mysql.query_db(query, data)
+
+def ajax_verify_email(field):
+    mysql = connectToMySQL('login_registration')
+    query = "SELECT email FROM registrations WHERE registrations.email = %(email)s;"
+    data = { "email": field['email']}
+    return mysql.query_db(query, data)
+
+# def search_name(search):
+#     print('searchDB'*19)
+#     mysql = connectToMySQL("login_registration")
+#     query = 'SELECT * FROM registrations WHERE first_name LIKE %%(fname)s;'
+#     data = {
+#         'fname': search['search'] # get our data from the query string in the url
+#     }
+#     return mysql.query_db(query, data)
 
 if __name__ == "__main__":
     app.run(debug=True)

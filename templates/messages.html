@@ -10,7 +10,33 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
         <link rel="stylesheet" type="text/css" media="screen" href="{{ url_for('static', filename='css/messages.css') }}">
-        <script type = "text/javascript" src="{{ url_for('static', filename='js/messages.js')}}"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type = "text/javascript" src="{{ url_for('static', filename='js/wall2.js')}}"></script>
+        <script>
+            $(document).ready(function() {
+                console.log("Hey, I'm ready!")
+    $('.deleted_form').click(function(e){ // listen for when the #first_search element is submitted
+        e.preventDefault();
+        console.log('submit disabled delete hooray  :)')
+        console.log(e)
+        var message_id = $(this).attr("data")
+        console.log(message_id)
+        // var data = $(this).serialize()
+        // console.log(data)
+        $.ajax({
+            url: '/delete',
+            method: 'POST',
+            data: {message_id: message_id}
+        })
+        .done(function(response){
+            console.log("Deleted==========")
+            $("#message_" + message_id).remove()
+        })
+        console.log('ajax entered')
+        return false;  // return false to disable the normal submission of the form
+    });
+            })
+        </script>
     </head>
     <body>
         <div class='my-container'>
@@ -19,27 +45,33 @@
                 <p>Welcome, {{session['name']}}</p>
                 <a href='/logout'>Logout</a>
             </div>
-            <div class='container-left'>
+            <div class='container-left' style='overflow: scroll;'>
                 <h2><span>{{ count }}</span> Message(s) for You</h2>
                 {% for message in current_messages %}
-                    <div class="message">
+                    <div class="message" id="{{'message_' + (message['message_id']|string) }}">
                         <div class='message-left'>
                                 <p><span>{{ message['first_name'] }}</span> said <span>{{ now - message['created_at'] }} ago.</span><span></span></p>
                         </div>
                         <div class='message-right'>
-                            <form action='/delete' method='post'>
-                                <button name ='deleted_message' value='{{ message["message_id"] }}' type='submit' src="{{ url_for('static', filename='img/trashcan.png')}}" alt='delete button'></button>
+                            {{ message['message_id'] }}
+                            <form action='/delete' method='post' class='deleted_form' data="{{message['message_id'] }}">
+                                <div class='message_deleted'></div>
+                                <button id='delete_btn' name ='deleted_message' value='{{ message["message_id"] }}' type='submit' src="{{ url_for('static', filename='img/trashcan.png')}}" alt='delete button'></button>
                             </form>
                         </div>
                         <div class='message-bottom'>
                             <p><span>{{ message['message_content'] }}</span></p>
                         </div>
                     </div>
-                {% endfor %}
-                
+                {% endfor %}  
             </div>
-            <div class="container-right">
+            <div class="container-right" style='overflow-y: scroll;'>
                 <h2>Send Messages</h2>
+                <form method='POST' action='/usersearch' id='first_search'>
+                    <div id='first_name_message'></div>
+                    <input type="text" name="f_name" id='fname'>
+                    <button type="submit">Search</button>
+                </form>
                 {% with messages = get_flashed_messages() %}    <!-- declare a variable called messages -->
                     {% if messages %}                           <!-- check if there are any messages -->
                         {% for message in messages %}           <!-- loop through the messages -->
@@ -47,7 +79,7 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                <form action='/send_message' method='post'>
+                <form action='/send_message' method='post' id='comment_form'>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <label class="input-group-text" for="inputGroupSelect01">Options</label>
@@ -63,8 +95,9 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Comment</span>
                         </div>
-                        <textarea name='comment' class="form-control" aria-label="With textarea"></textarea>
+                        <textarea name='comment' class="form-control" id='comment_id' aria-label="With textarea"></textarea>
                     </div>
+                    <div id='comment_sent'></div> <!-- div for comment sent message -->
                     <button type='submit' class='btn btn-primary'>Submit</button>
                 </form>
             </div>
